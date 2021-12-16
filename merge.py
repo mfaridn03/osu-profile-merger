@@ -60,15 +60,10 @@ def combine_tops(top1, top2):
 
     for play in top2:
         if play["beatmap_id"] in [x["beatmap_id"] for x in combined]:
-            if (
-                play["pp"]
-                >= [x["pp"] for x in combined if x["beatmap_id"] == play["beatmap_id"]][
-                    0
-                ]
-            ):
-                combined.remove(
-                    [x for x in combined if x["beatmap_id"] == play["beatmap_id"]][0]
-                )
+            dupe = [x for x in combined if x["beatmap_id"] == play["beatmap_id"]][0]
+
+            if play["pp"] > dupe["pp"]:
+                combined.remove(dupe)
                 combined.append(play)
 
             # copilot made this, too lazy to change
@@ -93,7 +88,6 @@ def main(args):
     bonus_2 = calculate_bonus_pp(player_2)
 
     total_pp = combined_pp + max(bonus_1, bonus_2)
-    print(f"{bonus_1=} {bonus_2=} {combined_pp=} {total_pp=}")
     return combined, total_pp
 
 
