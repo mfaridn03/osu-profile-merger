@@ -4,4 +4,4 @@ merge top plays from two players and see the combined top 100 as well as combine
 
 requirements: `requests`
 
-usage: `python3 merge.py <playerId1> <playerId2>
+usage: `python3 merge.py <playerId1> <playerId2>`
