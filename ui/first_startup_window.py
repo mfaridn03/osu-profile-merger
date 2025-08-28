@@ -58,8 +58,6 @@ class FirstStartupWindow:
                 dpg.add_button(
                     label="Save Credentials", callback=self._save_credentials, width=150
                 )
-                dpg.group(xoffset=20)
-                dpg.add_button(label="Help", callback=self._show_help, width=100)
 
         # Center the window
         dpg.set_item_pos("setup_window", [150, 100])
@@ -95,26 +93,3 @@ class FirstStartupWindow:
 
         except Exception as e:
             dpg.set_value(self.status_text, f"Error saving credentials: {str(e)}")
-
-    def _show_help(self):
-        """Show help information"""
-        if dpg.does_item_exist("help_window"):
-            dpg.delete_item("help_window")
-
-        with dpg.window(
-            label="Help", tag="help_window", modal=True, width=600, height=300
-        ):
-            dpg.add_text("How to get your osu! API credentials:")
-            dpg.add_separator()
-            dpg.add_text("1. Go to https://osu.ppy.sh/home/account/edit#oauth")
-            dpg.add_text("2. Create a new OAuth application")
-            dpg.add_text("3. Copy the Client ID and Client Secret")
-            dpg.add_text("4. Your User ID can be found in your profile URL")
-            dpg.add_spacer(height=2)
-            dpg.add_text(
-                "Note: Credentials are encrypted and stored locally.", color=(0, 255, 0)
-            )
-            dpg.add_spacer()
-            dpg.add_button(
-                label="Close", callback=lambda: dpg.delete_item("help_window")
-            )
