@@ -1,6 +1,6 @@
 import dearpygui.dearpygui as dpg
 from auth import CredentialManager
-from ui import FirstStartupWindow, create_main_window
+from ui import FirstStartupWindow, create_main_window, UserIdPromptWindow
 
 
 class OsuProfileMergerApp:
@@ -19,7 +19,7 @@ class OsuProfileMergerApp:
         if not self.credential_manager.credentials_exist():
             self._show_first_startup()
         else:
-            self._show_main_window()
+            self._show_user_id_prompt()
 
     def _show_first_startup(self):
         """Show first startup configuration window"""
@@ -29,6 +29,15 @@ class OsuProfileMergerApp:
 
         startup_window = FirstStartupWindow(self.credential_manager, on_setup_complete)
         startup_window.create_window()
+
+    def _show_user_id_prompt(self):
+        """Show user ID prompt for returning users"""
+
+        def on_prompt_complete():
+            self._show_main_window()
+
+        user_id_prompt = UserIdPromptWindow(on_prompt_complete, self.credential_manager)
+        user_id_prompt.create_window()
 
     def _show_main_window(self):
         """Show the main application window"""
