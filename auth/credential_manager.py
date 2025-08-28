@@ -11,14 +11,13 @@ class CredentialManager:
 
     def __init__(self):
         self.config_file = "data/config.json"
-        self.salt = b"727 wysi! when you see it!! when yuo fking see it.."
 
-    def _derive_key(self, osu_user_id: str) -> bytes:
-        """Derive encryption key from osu user ID"""
+    def _derive_key(self, osu_user_id: str, salt: bytes) -> bytes:
+        """Derive encryption key from osu user ID and salt"""
         kdf = PBKDF2HMAC(
             algorithm=hashes.SHA256(),
             length=32,
-            salt=self.salt,
+            salt=salt,
             iterations=100_000,
         )
         key = base64.urlsafe_b64encode(kdf.derive(osu_user_id.encode()))
@@ -28,7 +27,9 @@ class CredentialManager:
         self, osu_user_id: str, client_id: str, client_secret: str
     ) -> dict:
         """Encrypt client credentials using osu user ID as key"""
-        key = self._derive_key(osu_user_id)
+        # Generate random salt for this encryption
+        salt = os.urandom(32)
+        key = self._derive_key(osu_user_id, salt)
         fernet = Fernet(key)
 
         encrypted_client_id = fernet.encrypt(client_id.encode()).decode()
@@ -37,6 +38,7 @@ class CredentialManager:
         return {
             "ecid": encrypted_client_id,
             "ecsec": encrypted_client_secret,
+            "salt": base64.urlsafe_b64encode(salt).decode(),
         }
 
     def decrypt_credentials(self, osu_user_id: str) -> dict:
@@ -47,7 +49,14 @@ class CredentialManager:
         with open(self.config_file, "r") as f:
             data = json.load(f)
 
-        key = self._derive_key(osu_user_id)
+        if "salt" not in data:
+            raise ValueError(
+                "Salt not found in config file, delete data/config.json and run again"
+            )
+        else:
+            salt = base64.urlsafe_b64decode(data["salt"].encode())
+
+        key = self._derive_key(osu_user_id, salt)
         fernet = Fernet(key)
 
         try:
