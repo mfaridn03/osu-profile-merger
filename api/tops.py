@@ -17,7 +17,7 @@ class PlayerTops:
         ):
             self.add_score(s)
 
-    def add_score(self, score: ossapi.Score):
+    def add_score(self, score: ossapi.Score, custom_user: ossapi.User = None):
         if (
             score.beatmap_id in self.data
             and self.data[score.beatmap_id]["pp"] > score.pp
@@ -29,7 +29,7 @@ class PlayerTops:
 
         self.data[score.beatmap_id] = {
             "pp": score.pp,
-            "user": self.user,
+            "user": custom_user or self.user,
             "score": score,
         }
 
