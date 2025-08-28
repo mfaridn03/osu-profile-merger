@@ -5,9 +5,9 @@ from auth import CredentialManager
 class FirstStartupWindow:
     """Handles the first-time setup UI for collecting user credentials"""
 
-    def __init__(self, credential_manager: CredentialManager, on_complete_callback):
-        self.credential_manager = credential_manager
+    def __init__(self, on_complete_callback, credential_manager: CredentialManager):
         self.on_complete_callback = on_complete_callback
+        self.credential_manager = credential_manager
         self.user_id_input = None
         self.client_id_input = None
         self.client_secret_input = None
@@ -78,18 +78,14 @@ class FirstStartupWindow:
             dpg.set_value(self.status_text, "User ID must be numeric.")
             return
 
-        try:
-            # Encrypt and save credentials
-            encrypted_data = self.credential_manager.encrypt_credentials(
-                user_id, client_id, client_secret
-            )
-            self.credential_manager.save_credentials(encrypted_data)
+        # Encrypt and save credentials
+        encrypted_data = self.credential_manager.encrypt_credentials(
+            user_id, client_id, client_secret
+        )
+        self.credential_manager.save_credentials(encrypted_data)
 
-            dpg.set_value(self.status_text, "")
-            dpg.delete_item("setup_window")
+        dpg.set_value(self.status_text, "")
+        dpg.delete_item("setup_window")
 
-            # Call the completion callback
-            self.on_complete_callback()
-
-        except Exception as e:
-            dpg.set_value(self.status_text, f"Error saving credentials: {str(e)}")
+        # Call the completion callback
+        self.on_complete_callback(user_id)

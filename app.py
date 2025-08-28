@@ -24,24 +24,24 @@ class OsuProfileMergerApp:
     def _show_first_startup(self):
         """Show first startup configuration window"""
 
-        def on_setup_complete():
-            self._show_main_window()
+        def on_setup_complete(user_id: str):
+            self._show_main_window(user_id)
 
-        startup_window = FirstStartupWindow(self.credential_manager, on_setup_complete)
+        startup_window = FirstStartupWindow(on_setup_complete, self.credential_manager)
         startup_window.create_window()
 
     def _show_user_id_prompt(self):
         """Show user ID prompt for returning users"""
 
-        def on_prompt_complete():
-            self._show_main_window()
+        def on_prompt_complete(user_id: str):
+            self._show_main_window(user_id)
 
         user_id_prompt = UserIdPromptWindow(on_prompt_complete, self.credential_manager)
         user_id_prompt.create_window()
 
-    def _show_main_window(self):
+    def _show_main_window(self, user_id: str):
         """Show the main application window"""
-        create_main_window()
+        create_main_window(user_id, self.credential_manager)
         dpg.set_primary_window("primary_window", True)
 
     def run(self):

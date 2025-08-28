@@ -54,7 +54,7 @@ class UserIdPromptWindow:
         dpg.set_item_pos("user_id_prompt_window", [200, 175])
 
     def _on_submit(self):
-        """Handle submit button click - currently does nothing as requested"""
+        """Handle submit button click"""
         user_id = dpg.get_value(self.user_id_input).strip()
 
         # Validate user ID
@@ -82,6 +82,8 @@ class UserIdPromptWindow:
 
         # Clear any error messages
         dpg.set_value(self.status_text, "")
+        self.close_window()
+        self.on_complete_callback(user_id)
 
     def get_user_id(self):
         """Get the entered user ID"""
