@@ -1,22 +1,58 @@
 import dearpygui.dearpygui as dpg
+from auth import CredentialManager
+from ui import FirstStartupWindow, create_main_window
+
+
+class OsuProfileMergerApp:
+    """Main application class for osu! Profile Merger"""
+
+    def __init__(self):
+        self.credential_manager = CredentialManager()
+
+    def initialize_gui(self):
+        """Initialize the DearPyGUI context and viewport"""
+        dpg.create_context()
+        dpg.create_viewport(title="osu! Profile Merger", width=800, height=600)
+
+    def setup_main_flow(self):
+        """Setup the main application flow based on configuration state"""
+        if not self.credential_manager.credentials_exist():
+            self._show_first_startup()
+        else:
+            self._show_main_window()
+
+    def _show_first_startup(self):
+        """Show first startup configuration window"""
+
+        def on_setup_complete():
+            self._show_main_window()
+
+        startup_window = FirstStartupWindow(self.credential_manager, on_setup_complete)
+        startup_window.create_window()
+
+    def _show_main_window(self):
+        """Show the main application window"""
+        create_main_window()
+        dpg.set_primary_window("primary_window", True)
+
+    def run(self):
+        """Run the application"""
+        self.initialize_gui()
+        self.setup_main_flow()
+
+        # Start the GUI loop
+        dpg.setup_dearpygui()
+        dpg.show_viewport()
+        dpg.start_dearpygui()
+
+        # Cleanup
+        dpg.destroy_context()
 
 
 def main():
-    dpg.create_context()
-
-    dpg.create_viewport(title="Title", width=800, height=600)
-
-    with dpg.window(label="Window", tag="primary_window"):
-        dpg.add_text("Hello, World!")
-
-    dpg.set_primary_window("primary_window", True)
-
-    dpg.setup_dearpygui()
-    dpg.show_viewport()
-
-    dpg.start_dearpygui()
-
-    dpg.destroy_context()
+    """Main entry point"""
+    app = OsuProfileMergerApp()
+    app.run()
 
 
 if __name__ == "__main__":
