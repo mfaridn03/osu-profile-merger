@@ -73,6 +73,10 @@ class CredentialManager:
 
     def save_credentials(self, encrypted_data: dict):
         """Save encrypted credentials to file"""
+        # check if data dir exists, if not create it
+        if not os.path.exists("data"):
+            os.makedirs("data")
+
         with open(self.config_file, "w") as f:
             json.dump(encrypted_data, f, indent=2)
 
