@@ -26,32 +26,32 @@ class FirstStartupWindow:
             dpg.add_text("osu! Profile Merger!")
             dpg.add_separator()
             dpg.add_text("Please enter your osu! API credentials:")
-            dpg.add_spacing(count=2)
+            dpg.add_spacer(height=2)
 
             # osu! User ID input
             dpg.add_text("osu! User ID:")
             self.user_id_input = dpg.add_input_text(
                 hint="Your numeric osu! user ID", width=400
             )
-            dpg.add_spacing()
+            dpg.add_spacer()
 
             # Client ID input
             dpg.add_text("Client ID:")
             self.client_id_input = dpg.add_input_text(
                 hint="Your osu! API client ID", width=400
             )
-            dpg.add_spacing()
+            dpg.add_spacer()
 
             # Client Secret input
             dpg.add_text("Client Secret:")
             self.client_secret_input = dpg.add_input_text(
                 hint="Your osu! API client secret", password=True, width=400
             )
-            dpg.add_spacing(count=2)
+            dpg.add_spacer(height=2)
 
             # Status text
             self.status_text = dpg.add_text("", color=(255, 0, 0))
-            dpg.add_spacing()
+            dpg.add_spacer()
 
             # Buttons
             with dpg.group(horizontal=True):
@@ -110,11 +110,11 @@ class FirstStartupWindow:
             dpg.add_text("2. Create a new OAuth application")
             dpg.add_text("3. Copy the Client ID and Client Secret")
             dpg.add_text("4. Your User ID can be found in your profile URL")
-            dpg.add_spacing(count=2)
+            dpg.add_spacer(height=2)
             dpg.add_text(
                 "Note: Credentials are encrypted and stored locally.", color=(0, 255, 0)
             )
-            dpg.add_spacing()
+            dpg.add_spacer()
             dpg.add_button(
                 label="Close", callback=lambda: dpg.delete_item("help_window")
             )
