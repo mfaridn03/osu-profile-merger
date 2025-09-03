@@ -113,16 +113,15 @@ def on_merge_clicked(sender, app_data, user_data):
 
     # Disable UI during work
     _set_loading_state(button_tag, main_input_tag, merge_input_tag, True)
-    dpg.set_value(status_tag, "Fetching and merging top plays...")
+    dpg.set_value(status_tag, "Fetching data...")
 
     def worker():
         try:
             api = ossapi.Ossapi(client_id, client_secret)
-            merged = merge_top_scores(api, main_id, merge_id, limit=100)
+            merged, bonus1, bonus2 = merge_top_scores(api, main_id, merge_id, limit=100)
 
             # Render results
-            _render_results(table_tag, merged)
-            dpg.set_value(status_tag, f"Merged {len(merged)} unique beatmaps.")
+            _render_results(table_tag, merged, bonus1, bonus2, status_tag)
         except Exception as e:
             dpg.set_value(status_tag, f"Error: {e}")
         finally:
@@ -152,7 +151,7 @@ def _clear_results_table(table_tag: str):
         pass
 
 
-def _render_results(table_tag: str, rows):
+def _render_results(table_tag: str, rows, bonus1, bonus2, status_tag: str):
     _clear_results_table(table_tag)
     rank = 1
     total_pp = 0
@@ -190,4 +189,7 @@ def _render_results(table_tag: str, rows):
             dpg.add_text(f"{acc * 100:.2f}%")
         rank += 1
 
-    print(f"{total_pp:.2f} total")
+    dpg.set_value(
+        status_tag,
+        f"New PP (without bonus): {total_pp:.2f}\nBonus PP for {bonus1[0].username}: {bonus1[1]:.2f}\nBonus PP for {bonus2[0].username}: {bonus2[1]:.2f}\nFinal PP: {(total_pp + bonus1[1]):.2f} / {(total_pp + bonus2[1]):.2f}",
+    )

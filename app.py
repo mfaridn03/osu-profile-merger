@@ -12,7 +12,7 @@ class OsuProfileMergerApp:
     def initialize_gui(self):
         """Initialize the DearPyGUI context and viewport"""
         dpg.create_context()
-        dpg.create_viewport(title="osu! Profile Merger", width=800, height=600)
+        dpg.create_viewport(title="osu! Profile Merger", width=1600, height=900)
 
     def setup_main_flow(self):
         """Setup the main application flow based on configuration state"""

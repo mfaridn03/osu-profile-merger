@@ -1,5 +1,6 @@
 import json
 import ossapi
+import math
 
 
 class PlayerTops:
@@ -7,7 +8,12 @@ class PlayerTops:
         self.user = user
         self.api = api
         self.data = {}  # {beatmap_id: {"pp": pp, user: User, score: Score}}
+        self.pp_weighted = 0
+        self.bonus_pp = 0
 
+        # pp & bonus pp calc
+        _vals = []
+        _i = 0
         # init
         for s in self.api.user_scores(
             self.user.id,
@@ -15,7 +21,15 @@ class PlayerTops:
             mode=ossapi.GameMode.OSU,
             limit=limit,
         ):
+            _vals.append(s.pp * (0.95**_i))
+            _i += 1
             self.add_score(s)
+
+        self.pp_weighted = sum(_vals)
+        if math.ceil(self.user.statistics.pp) == 0:  # inactive
+            self.bonus_pp = 0
+        else:
+            self.bonus_pp = self.user.statistics.pp - self.pp_weighted
 
     def add_score(self, score: ossapi.Score, custom_user: ossapi.User = None):
         if (
@@ -40,6 +54,9 @@ class PlayerTops:
         ret.sort(key=lambda x: x[1]["pp"], reverse=True)
         return ret
 
+    def _bonus_pp_calc(self):
+        pass
+
 
 if __name__ == "__main__":
     # fetch dummy data
@@ -52,6 +69,6 @@ if __name__ == "__main__":
     client_secret = data["secret"]
 
     api = ossapi.Ossapi(client_id, client_secret)
-    user = api.user(12404726)
-    tops = PlayerTops(user, api, limit=5)
-    print(tops.data.keys())
+    # inactive player test
+    user = api.user(13357689, mode=ossapi.GameMode.OSU)
+    print(user.statistics)
