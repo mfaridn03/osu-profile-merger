@@ -72,8 +72,8 @@ def create_main_window(user_id: str, credential_manager: CredentialManager):
             dpg.add_table_column(label="User")
             dpg.add_table_column(label="Beatmap")
             dpg.add_table_column(label="PP")
-            dpg.add_table_column(label="Accuracy")
             dpg.add_table_column(label="Mods")
+            dpg.add_table_column(label="Accuracy")
 
 
 def on_merge_clicked(sender, app_data, user_data):
@@ -155,19 +155,39 @@ def _clear_results_table(table_tag: str):
 def _render_results(table_tag: str, rows):
     _clear_results_table(table_tag)
     rank = 1
+    total_pp = 0
+    mult = 0
     for beatmap_id, data in rows:
         score = data["score"]
-        user = data["user"]
+        username = data["user"].username
         pp_val = data.get("pp", getattr(score, "pp", 0.0))
         acc = getattr(score, "accuracy", 0.0)
         mods = getattr(score, "mods", None)
-        mods_str = ",".join([m.acronym for m in mods]) if mods is not None else ""
+        mods_aslist = [m.acronym for m in mods] if mods is not None else []
+
+        # lazer check
+        if "CL" not in mods_aslist:
+            username += " (Lazer)"
+        else:
+            mods_aslist.remove("CL")
+        mods_str = ",".join(mods_aslist) if mods_aslist else ""
+
+        # beatmap formatting
+        version = score.beatmap.version
+        artist = score.beatmapset.artist
+        title = score.beatmapset.title
+        bm_format = f"{artist} - {title} [{version}]"
+
+        total_pp += float(pp_val) * (0.95**mult)
+        mult += 1
 
         with dpg.table_row(parent=table_tag):
             dpg.add_text(str(rank))
-            dpg.add_text(user.username)
-            dpg.add_text(str(beatmap_id))
+            dpg.add_text(username)
+            dpg.add_text(bm_format)
             dpg.add_text(f"{pp_val:.2f}")
-            dpg.add_text(f"{acc * 100:.2f}%")
             dpg.add_text(mods_str)
+            dpg.add_text(f"{acc * 100:.2f}%")
         rank += 1
+
+    print(f"{total_pp:.2f} total")
